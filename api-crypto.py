@@ -61,7 +61,7 @@ def token_required(f):
         return f(*args,**kwargs)
     return decorator
 
-@app.route('/alerts/create',methods = ['POST'])
+@app.route('/alerts/create')
 @token_required
 def create():
     currentvalue = apicall()
@@ -71,7 +71,7 @@ def create():
     b.append({'target':target,'bitcoin_value':currentvalue,'status': "Not triggered",'email':email})
     return "Created"
 
-@app.route('/alerts/delete',methods = ['POST'])
+@app.route('/alerts/delete')
 @token_required
 def delete():
     delete_request = request.get_json(force=True)
@@ -81,7 +81,7 @@ def delete():
             b.remove(k)
     return "deleted"
 
-@app.route('/fetch',methods=['GET'])
+@app.route('/fetch')
 @token_required
 def fetch():
     ttl_page = 0
@@ -94,13 +94,6 @@ def fetch():
     return fetchs
 
 
-@app.route('/fetch/<int:i>',methods=['GET'])
-@token_required
-def fetch(i):
-    m = []
-    for j in range[(i*10)-10,i*10]:
-        m.append(b[j])
-    return jsonify({m})
 
 @app.route('/login')
 def login():
@@ -114,5 +107,12 @@ def login():
 if __name__ == '__main__':
    t1 = threading.Thread(target=app.run)
    t2 = threading.Thread(target=infiniteloop)
+   t1.start()
+   t2.start()
+   t1.join()
+   t1.join()
+   
+
+
    
    
