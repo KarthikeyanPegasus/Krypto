@@ -1,8 +1,10 @@
+from time import sleep
 import requests
 from flask import Flask, jsonify, request, make_response
 import jwt
 import datetime
 from functools import wraps
+import threading
 
 
 b = []
@@ -33,7 +35,11 @@ def set_alert():
         if(checkprice(i['bitcoin_value'],target,currentprice)):
             print("trigger email")
             i['status']="triggered"
-        
+    
+def infiniteloop():
+    while True:
+        set_alert()
+        sleep(60)
             
 
 
@@ -106,6 +112,7 @@ def login():
         
     return make_response('Incorrect Username or Password!', 401, {'WWW-Authenticate':'Basic realm="Login Required"'})
 if __name__ == '__main__':
-   app.run()
+   t1 = threading.Thread(target=app.run)
+   t2 = threading.Thread(target=infiniteloop)
    
    
